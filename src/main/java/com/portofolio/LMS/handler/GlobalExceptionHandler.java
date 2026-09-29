@@ -2,6 +2,7 @@ package com.portofolio.LMS.handler;
 
 import com.portofolio.LMS.dto.ErrorResponseDTO;
 import com.portofolio.LMS.exception.DuplicateResourceException;
+import com.portofolio.LMS.exception.InvalidCredentialsException;
 import com.portofolio.LMS.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -82,5 +83,20 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidCredentials(
+            InvalidCredentialsException ex, HttpServletRequest request) {
+
+        ErrorResponseDTO body = ErrorResponseDTO.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 }
